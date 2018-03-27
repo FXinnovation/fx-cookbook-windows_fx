@@ -1,0 +1,105 @@
+---
+driver:
+  name: gce
+  project: dazzlingwrench
+  region: us-east1
+  preemptible: true
+  metadata:
+    ssh-keys: <%= 'kitchenuser:' + IO.binread("/tmp/id_rsa.pub").rstrip! %>
+  tags:
+  - fxinnovation
+
+provisioner:
+  name: chef_zero
+  max_retries: 3
+  wait_for_retry: 90
+  retry_on_exit_code:
+  - 35
+  client_rb:
+    exit_status: :enabled
+    client_fork: false
+
+verifier:
+  name: inspec
+  sudo: true
+  format: junit
+  output: "%{platform}_%{suite}_inspec.xml"
+
+transport:
+  username: kitchenuser
+  ssh_key: /tmp/id_rsa
+
+platforms:
+  - name: windows2008
+    driver:
+      email: 954209166228-compute@developer.gserviceaccount.com
+      image_project: windows-cloud
+      image_family: windows-2008-r2
+      disk_size: 50
+      metadata:
+        windows-startup-script-ps1: |
+          [System.Net.Dns]::GetHostAddresses("activedirectory.c.dazzlingwrench.internal").IPAddressToString | select $_ -OutVar dnsaddress
+          $wmi = Get-WmiObject win32_networkadapterconfiguration -filter "ipenabled = 'true'"
+          $wmi.SetDNSServerSearchOrder($dnsaddress)
+          netsh firewall add portopening TCP 5985 "Port 5985"
+          winrm quickconfig -q
+          winrm s winrm/config/winrs '@{MaxMemoryPerShellMB="512"}'
+          winrm s winrm/config '@{MaxTimeoutms="1800000"}'
+          winrm s winrm/config/service '@{AllowUnencrypted="true"}'
+          winrm s winrm/config/service/auth '@{Basic="true"}'
+          winrm s winrm/config/listener?Address=*+Transport=HTTP '@{Port="5985"}'
+          get-service winrm
+  - name: windows2012
+    driver:
+      email: 954209166228-compute@developer.gserviceaccount.com
+      image_project: windows-cloud
+      image_family: windows-2012-r2
+      disk_size: 50
+      metadata:
+        windows-startup-script-ps1: |
+          netsh firewall add portopening TCP 5985 "Port 5985"
+          winrm quickconfig -q
+          winrm s winrm/config/winrs '@{MaxMemoryPerShellMB="512"}'
+          winrm s winrm/config '@{MaxTimeoutms="1800000"}'
+          winrm s winrm/config/service '@{AllowUnencrypted="true"}'
+          winrm s winrm/config/service/auth '@{Basic="true"}'
+          winrm s winrm/config/listener?Address=*+Transport=HTTP '@{Port="5985"}'
+          get-service winrm
+  - name: windows2016
+    transport:
+      connection_retry_sleep: 30
+    driver:
+      email: 954209166228-compute@developer.gserviceaccount.com
+      image_project: windows-cloud
+      image_family: windows-2016
+      machine_type: n1-standard-2
+      disk_size: 50
+      metadata:
+        windows-startup-script-ps1: |
+          netsh firewall add portopening TCP 5985 "Port 5985"
+          winrm quickconfig -q
+          winrm s winrm/config/winrs '@{MaxMemoryPerShellMB="512"}'
+          winrm s winrm/config '@{MaxTimeoutms="1800000"}'
+          winrm s winrm/config/service '@{AllowUnencrypted="true"}'
+          winrm s winrm/config/service/auth '@{Basic="true"}'
+          winrm s winrm/config/listener?Address=*+Transport=HTTP '@{Port="5985"}'
+          get-service winrm
+
+suites:
+  - name: windows
+    run_list:
+      - recipe[windows_fx::kitchen]
+    attributes:
+      windows_fx:
+        proxy:
+          ip: 10.10.10.10
+          port: 3128
+          override: <local>
+    includes:
+    - windows2016
+    - windows2012
+    - windows2008
+    verifier:
+      inspec_tests:
+      - name: windows
+        path: test/integration/windows
