@@ -94,7 +94,7 @@ suites:
         proxy:
           ip: 10.10.10.10
           port: 3128
-          override: <local>
+          override: true
     includes:
     - windows2016
     - windows2012
