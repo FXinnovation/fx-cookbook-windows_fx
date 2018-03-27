@@ -21,7 +21,7 @@ action :create do
     # Defines hash based on variables
     values_arr = [{ name: 'ProxyEnable',          type: :dword,  data: '1' }]
     values_arr << { name: 'ProxyServer',          type: :string, data: "#{new_resource.ip}:#{new_resource.port}" }
-    values_arr << { name: 'ProxyOverride',        type: :string, data: '<local>' } unless new_resource.override
+    values_arr << { name: 'ProxyOverride',        type: :string, data: '<local>' } if new_resource.override
     values_arr << { name: 'ProxySettingsPerUser', type: :dword,  data: '0' }
 
     registry_key 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' do
