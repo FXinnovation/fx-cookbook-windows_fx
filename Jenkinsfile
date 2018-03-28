@@ -1,4 +1,18 @@
 #!/bin/groovy
+// Setting Job properties
+properties([
+  buildDiscarder(
+    logRotator(
+      artifactDaysToKeepStr: '10',
+      artifactNumToKeepStr: '10',
+      daysToKeepStr: '10',
+      numToKeepStr: '10'
+    )
+  ),
+  pipelineTriggers([[
+    $class: 'PeriodicFolderTrigger',
+    interval: '1d']])
+])
 // Setting some variables
 notify      = false
 color       = "GREEN"
@@ -82,6 +96,11 @@ node() {
       }
     }
   }catch(error){
+    // Archive kitchen logs to help debugging
+    archiveArtifacts(
+      allowEmptyArchive: true,
+      artifacts: '.kitchen/logs/*.log'
+    )
     // Setting notification errors
     notify  = true
     color   = "RED"
