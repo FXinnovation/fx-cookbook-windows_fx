@@ -17,7 +17,7 @@ property :override, [true, false], default: true
 
 # Defining install action (default)
 action :create do
-  if property_is_set(:port) && property_is_set(:ip)
+  if property_is_set?(:port) && property_is_set?(:ip)
     # Defines hash based on variables
     values_arr = [{ name: 'ProxyEnable',          type: :dword,  data: '1' }]
     values_arr << { name: 'ProxyServer',          type: :string, data: "#{new_resource.ip}:#{new_resource.port}" }
