@@ -26,7 +26,7 @@ action :create do
 
   require 'ipaddress'
 
-  unless IPAdress.valid?(new_resource.ip)
+  unless IPAddress.valid?(new_resource.ip)
     Chef::Log.fatal('Property ip must be valid IPv4 or IPv6 address.')
   end
 

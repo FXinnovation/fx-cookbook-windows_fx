@@ -1,4 +1,4 @@
-# adjoin_fx
+# windows_fx
 The windows_fx cookbook provides resources to perform configurations on Windows servers.
 ## Requirements
 ### Cookbooks
@@ -22,8 +22,6 @@ N/A
 | `ip` | `String` | `false` | - | `All` | IP address of proxy server |
 | `port` | `Integer` | `false` | - | `All` | Port used on proxy server |
 | `override` | `Boolean` | `false` | `true` | `All` | Bypass proxy server for local addresses |
-
-##### Notes
 
 ## Versionning
 This cookbook will follow semantic versionning 2.0.0 as described [here](https://semver.org/)
