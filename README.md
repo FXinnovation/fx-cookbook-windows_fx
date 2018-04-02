@@ -1,5 +1,5 @@
 # adjoin_fx
-The windows_fx cookbook provides you with resources to perform configurations on Windows servers. 
+The windows_fx cookbook provides resources to perform configurations on Windows servers.
 ## Requirements
 ### Cookbooks
 N/A
@@ -21,7 +21,7 @@ N/A
 | ---- | ---- | -------- | ------- | --------------- | ----------- |
 | `ip` | `String` | `false` | - | `All` | IP address of proxy server |
 | `port` | `Integer` | `false` | - | `All` | Port used on proxy server |
-| `override` | `String` | `false` | `true` | `All` | Bypass proxy server for local addresses |
+| `override` | `Boolean` | `false` | `true` | `All` | Bypass proxy server for local addresses |
 
 ##### Notes
 
