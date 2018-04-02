@@ -17,6 +17,12 @@ property :override, [true, false], default: true
 
 # Defining install action (default)
 action :create do
+  require 'resolv'
+
+  unless new_resource.ip =~ Resolve::IPv4::Regex && new_resource.ip =~ Resolve::IPv6::Regex
+    Chef::Log.fatal('Property ip must be valid IPv4 or IPv6 address.')
+  end
+
   if property_is_set?(:port) && property_is_set?(:ip)
     # Defines hash based on variables
     values_arr = [{ name: 'ProxyEnable',          type: :dword,  data: '1' }]
