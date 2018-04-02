@@ -9,6 +9,8 @@
 # Defining resource name
 resource_name :windows_fx_proxy
 
+provides :windows_fx_proxy, platform_family: 'windows'
+
 # Defining properties
 # ip and port are not required in case action :destroy is called
 property :ip,       String, sensitive: true
@@ -17,14 +19,14 @@ property :override, [true, false], default: true
 
 # Defining install action (default)
 action :create do
-  chef_gem 'resolv' do
+  chef_gem 'ipaddress' do
     action :install
     compile_time true
   end
 
-  require 'resolv'
+  require 'ipaddress'
 
-  unless new_resource.ip =~ Resolv::IPv4::Regex && new_resource.ip =~ Resolv::IPv6::Regex
+  unless IPAdress.valid?(new_resource.ip)
     Chef::Log.fatal('Property ip must be valid IPv4 or IPv6 address.')
   end
 
